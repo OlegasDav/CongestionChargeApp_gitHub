@@ -1,6 +1,7 @@
 ﻿using Contracts.Enums;
 using Contracts.Models;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 
 namespace CongestionChargeApp
@@ -9,33 +10,44 @@ namespace CongestionChargeApp
     {
         static void Main(string[] args)
         {
-            var car = new Vehicle
+            var vehicles = new List<Vehicle>()
             {
-                Name = "Car",
-                EntryDate = new DateTime(2008, 4, 24, 11, 32, 0),
-                ExitDate = new DateTime(2008, 4, 24, 14, 42, 0),
-                Type = VehicleType.Car
+                new Vehicle()
+                {
+                    Name = "Car",
+                    EntryDate = new DateTime(2008, 4, 24, 11, 32, 0),
+                    ExitDate = new DateTime(2008, 4, 24, 14, 42, 0),
+                    Type = VehicleType.Car
+                },
+                new Vehicle()
+                {
+                    Name = "Motorbike",
+                    EntryDate = new DateTime(2008, 4, 24, 17, 0, 0),
+                    ExitDate = new DateTime(2008, 4, 24, 22, 11, 0),
+                    Type = VehicleType.Motorbike
+                },
+                new Vehicle()
+                {
+                    Name = "Van",
+                    EntryDate = new DateTime(2008, 4, 25, 10, 23, 0),
+                    ExitDate = new DateTime(2008, 4, 28, 9, 2, 0),
+                    Type = VehicleType.Car
+                }
             };
 
-            var motorbike = new Vehicle
-            {
-                Name = "Motorbike",
-                EntryDate = new DateTime(2008, 4, 24, 17, 0, 0),
-                ExitDate = new DateTime(2008, 4, 24, 22, 11, 0),
-                Type = VehicleType.Motorbike
-            };
+            PrintReceipts(vehicles);
+        }
 
-            var van = new Vehicle
-            {
-                Name = "Van",
-                EntryDate = new DateTime(2008, 4, 25, 10, 23, 0),
-                ExitDate = new DateTime(2008, 4, 28, 9, 2, 0),
-                Type = VehicleType.Car
-            };
+        static void PrintReceipts(List<Vehicle> vehicles)
+        {
+            int i = 0;
 
-            CalculateCharge(car);
-            CalculateCharge(motorbike);
-            CalculateCharge(van);
+            foreach (var vehicle in vehicles)
+            {
+                Console.WriteLine($"Receipt {++i}");
+                CalculateCharge(vehicle);
+                Console.WriteLine("------------------------------");
+            }
         }
 
         static void CalculateCharge(Vehicle vehicle)
