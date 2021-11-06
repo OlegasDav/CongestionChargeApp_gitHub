@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31424.327
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CongestionChargeApp", "CongestionChargeApp\CongestionChargeApp.csproj", "{AE41E00E-9A1E-4628-9A6C-31447559EF43}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Contracts", "Contracts\Contracts.csproj", "{E7EF0F63-6476-49E7-93DA-B228B42555E4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AE41E00E-9A1E-4628-9A6C-31447559EF43}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE41E00E-9A1E-4628-9A6C-31447559EF43}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE41E00E-9A1E-4628-9A6C-31447559EF43}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE41E00E-9A1E-4628-9A6C-31447559EF43}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E7EF0F63-6476-49E7-93DA-B228B42555E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E7EF0F63-6476-49E7-93DA-B228B42555E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E7EF0F63-6476-49E7-93DA-B228B42555E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E7EF0F63-6476-49E7-93DA-B228B42555E4}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {74862D0A-D5F3-4DD7-844D-55C4D5F71F31}
+	EndGlobalSection
+EndGlobal
