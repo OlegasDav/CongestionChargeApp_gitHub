@@ -47,7 +47,6 @@ namespace CongestionChargeApp
             TimeSpan amHours = TimeSpan.Zero;
             TimeSpan pmHours = TimeSpan.Zero;
 
-
             for (DateTime date = vehicle.EntryDate.Date; date <= vehicle.ExitDate.Date; date = date.AddDays(1))
             {
                 if (date.DayOfWeek == DayOfWeek.Saturday || date.DayOfWeek == DayOfWeek.Sunday)
