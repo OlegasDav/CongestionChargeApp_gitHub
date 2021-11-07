@@ -24,13 +24,18 @@ namespace CongestionChargeApp
 
             foreach (var vehicle in vehicles)
             {
+                var calculatedCharge = CalculateCharge(vehicle);
+
                 Console.WriteLine($"Receipt {++i}");
-                CalculateCharge(vehicle);
+                Console.WriteLine(vehicle);
+                Console.WriteLine($"Charge for {calculatedCharge.AmHours.Hours}h {calculatedCharge.AmHours.Minutes}m (AM rate): {calculatedCharge.ChargeForAm.ToString("C", new CultureInfo("en-GB"))}");
+                Console.WriteLine($"Charge for {calculatedCharge.PmHours.Hours}h {calculatedCharge.PmHours.Minutes}m (PM rate): {calculatedCharge.ChargeForPm.ToString("C", new CultureInfo("en-GB"))}");
+                Console.WriteLine($"Total Charge: {calculatedCharge.TotalCharge.ToString("C", new CultureInfo("en-GB"))}");
                 Console.WriteLine("------------------------------");
             }
         }
 
-        static void CalculateCharge(Vehicle vehicle)
+        static CalculatedCharge CalculateCharge(Vehicle vehicle)
         {
             var charge = new Charge
             {
@@ -89,10 +94,14 @@ namespace CongestionChargeApp
             var chargeForPm = Math.Floor((decimal)pmHours.TotalHours * charge.PmRate * 10) / 10;
             var totalCharge = chargeForAm + chargeForPm;
 
-            Console.WriteLine(vehicle);
-            Console.WriteLine($"Charge for {amHours.Hours}h {amHours.Minutes}m (AM rate): {chargeForAm.ToString("C", new CultureInfo("en-GB"))}");
-            Console.WriteLine($"Charge for {pmHours.Hours}h {pmHours.Minutes}m (PM rate): {chargeForPm.ToString("C", new CultureInfo("en-GB"))}");
-            Console.WriteLine($"Total Charge: {totalCharge.ToString("C", new CultureInfo("en-GB"))}");
+            return new CalculatedCharge
+            {
+                ChargeForAm = chargeForAm,
+                ChargeForPm = chargeForPm,
+                TotalCharge = totalCharge,
+                AmHours = amHours,
+                PmHours = pmHours
+            };
         }
     }
 }
