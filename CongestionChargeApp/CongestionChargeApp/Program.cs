@@ -37,17 +37,7 @@ namespace CongestionChargeApp
 
         static CalculatedCharge CalculateCharge(Vehicle vehicle)
         {
-            var charge = new Charge
-            {
-                AmRate = 2.0M,
-                PmRate = 2.5M
-            };
-
-            if (vehicle.Type == VehicleType.Motorbike)
-            {
-                charge.AmRate = 1.0M;
-                charge.PmRate = 1.0M;
-            }
+            var charge = GetCharge(vehicle);
 
             TimeSpan amHours = TimeSpan.Zero;
             TimeSpan pmHours = TimeSpan.Zero;
@@ -94,13 +84,31 @@ namespace CongestionChargeApp
             var chargeForPm = Math.Floor((decimal)pmHours.TotalHours * charge.PmRate * 10) / 10;
             var totalCharge = chargeForAm + chargeForPm;
 
-            return new CalculatedCharge
+            return new CalculatedCharge()
             {
                 ChargeForAm = chargeForAm,
                 ChargeForPm = chargeForPm,
                 TotalCharge = totalCharge,
                 AmHours = amHours,
                 PmHours = pmHours
+            };
+        }
+
+        static Charge GetCharge(Vehicle vehicle)
+        {
+            if (vehicle.Type == VehicleType.Motorbike)
+            {
+                return new Charge()
+                {
+                    AmRate = 1.0M,
+                    PmRate = 1.0M
+                };
+            }
+
+            return new Charge()
+            {
+                AmRate = 2.0M,
+                PmRate = 2.5M
             };
         }
     }
