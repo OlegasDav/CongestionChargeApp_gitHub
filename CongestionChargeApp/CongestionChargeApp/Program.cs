@@ -1,8 +1,10 @@
 ﻿using Contracts.Enums;
 using Contracts.Models;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 
 namespace CongestionChargeApp
 {
@@ -10,30 +12,8 @@ namespace CongestionChargeApp
     {
         static void Main(string[] args)
         {
-            var vehicles = new List<Vehicle>()
-            {
-                new Vehicle()
-                {
-                    Name = "Car",
-                    EntryDate = new DateTime(2008, 4, 24, 11, 32, 0),
-                    ExitDate = new DateTime(2008, 4, 24, 14, 42, 0),
-                    Type = VehicleType.Car
-                },
-                new Vehicle()
-                {
-                    Name = "Motorbike",
-                    EntryDate = new DateTime(2008, 4, 24, 17, 0, 0),
-                    ExitDate = new DateTime(2008, 4, 24, 22, 11, 0),
-                    Type = VehicleType.Motorbike
-                },
-                new Vehicle()
-                {
-                    Name = "Van",
-                    EntryDate = new DateTime(2008, 4, 25, 10, 23, 0),
-                    ExitDate = new DateTime(2008, 4, 28, 9, 2, 0),
-                    Type = VehicleType.Car
-                }
-            };
+            var jsonVehicles = File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Data\vehicles.json"));
+            var vehicles = JsonConvert.DeserializeObject<List<Vehicle>>(jsonVehicles);
 
             PrintReceipts(vehicles);
         }
@@ -67,113 +47,41 @@ namespace CongestionChargeApp
             TimeSpan amHours = TimeSpan.Zero;
             TimeSpan pmHours = TimeSpan.Zero;
 
-            if (vehicle.EntryDate > vehicle.ExitDate)
-            {
-                amHours = TimeSpan.Zero;
-                pmHours = TimeSpan.Zero;
-            }
-            else
-            {
-                for (DateTime date = vehicle.EntryDate.Date; date <= vehicle.ExitDate.Date; date = date.AddDays(1))
-                {
-                    if (date.DayOfWeek == DayOfWeek.Saturday || date.DayOfWeek == DayOfWeek.Sunday)
-                    {
-                        continue;
-                    }
 
-                    if (vehicle.EntryDate.Date == vehicle.ExitDate.Date)
+            for (DateTime date = vehicle.EntryDate.Date; date <= vehicle.ExitDate.Date; date = date.AddDays(1))
+            {
+                if (date.DayOfWeek == DayOfWeek.Saturday || date.DayOfWeek == DayOfWeek.Sunday)
+                {
+                    continue;
+                }
+
+                TimeSpan startChargeTime = TimeRange.Point7Am;
+                TimeSpan endChargeTime = TimeRange.Point7Pm;
+
+                if (vehicle.EntryDate.Date == date && vehicle.EntryDate.TimeOfDay > TimeRange.Point7Am)
+                {
+                    startChargeTime = vehicle.EntryDate.TimeOfDay;
+                }
+
+                if (vehicle.ExitDate.Date == date && vehicle.ExitDate.TimeOfDay < TimeRange.Point7Pm)
+                {
+                    endChargeTime = vehicle.ExitDate.TimeOfDay;
+                }
+
+                if (endChargeTime > startChargeTime)
+                {
+                    if (startChargeTime < TimeRange.Point12Pm && endChargeTime < TimeRange.Point12Pm)
                     {
-                        if (vehicle.EntryDate.TimeOfDay < TimeRange.point7Am
-                            && vehicle.ExitDate.TimeOfDay > TimeRange.point7Am
-                            && vehicle.ExitDate.TimeOfDay < TimeRange.point12Pm)
-                        {
-                            amHours = vehicle.ExitDate.TimeOfDay - TimeRange.point7Am;
-                        }
-                        else if (vehicle.EntryDate.TimeOfDay < TimeRange.point7Am
-                            && vehicle.ExitDate.TimeOfDay > TimeRange.point12Pm
-                            && vehicle.ExitDate.TimeOfDay < TimeRange.point7Pm)
-                        {
-                            amHours = TimeRange.point12Pm - TimeRange.point7Am;
-                            pmHours = vehicle.ExitDate.TimeOfDay - TimeRange.point12Pm;
-                        }
-                        else if (vehicle.EntryDate.TimeOfDay < TimeRange.point7Am
-                            && vehicle.ExitDate.TimeOfDay > TimeRange.point7Pm)
-                        {
-                            amHours = TimeRange.point12Pm - TimeRange.point7Am;
-                            pmHours = TimeRange.point7Pm - TimeRange.point12Pm;
-                        }
-                        else if (vehicle.EntryDate.TimeOfDay > TimeRange.point7Am
-                            && vehicle.ExitDate.TimeOfDay < TimeRange.point12Pm)
-                        {
-                            amHours = vehicle.ExitDate.TimeOfDay - vehicle.EntryDate.TimeOfDay;
-                        }
-                        else if (vehicle.EntryDate.TimeOfDay > TimeRange.point7Am
-                            && vehicle.EntryDate.TimeOfDay < TimeRange.point12Pm
-                            && vehicle.ExitDate.TimeOfDay < TimeRange.point7Pm)
-                        {
-                            amHours = TimeRange.point12Pm - vehicle.EntryDate.TimeOfDay;
-                            pmHours = vehicle.ExitDate.TimeOfDay - TimeRange.point12Pm;
-                        }
-                        else if (vehicle.EntryDate.TimeOfDay > TimeRange.point7Am
-                            && vehicle.EntryDate.TimeOfDay < TimeRange.point12Pm
-                            && vehicle.ExitDate.TimeOfDay > TimeRange.point7Pm)
-                        {
-                            amHours = TimeRange.point12Pm - vehicle.EntryDate.TimeOfDay;
-                            pmHours = TimeRange.point7Pm - TimeRange.point12Pm;
-                        }
-                        else if (vehicle.EntryDate.TimeOfDay > TimeRange.point12Pm
-                            && vehicle.ExitDate.TimeOfDay < TimeRange.point7Pm)
-                        {
-                            pmHours = vehicle.ExitDate.TimeOfDay - vehicle.EntryDate.TimeOfDay;
-                        }
-                        else if (vehicle.EntryDate.TimeOfDay > TimeRange.point12Pm
-                            && vehicle.ExitDate.TimeOfDay > TimeRange.point7Pm)
-                        {
-                            pmHours = TimeRange.point7Pm - vehicle.EntryDate.TimeOfDay;
-                        }
+                        amHours += endChargeTime - startChargeTime;
                     }
-                    else if (vehicle.EntryDate.Date == date)
+                    else if (startChargeTime < TimeRange.Point12Pm && endChargeTime > TimeRange.Point12Pm)
                     {
-                        if (vehicle.EntryDate.TimeOfDay < TimeRange.point7Am)
-                        {
-                            amHours += TimeRange.point12Pm - TimeRange.point7Am;
-                            pmHours += TimeRange.point7Pm - TimeRange.point12Pm;
-                        }
-                        else if (vehicle.EntryDate.TimeOfDay > TimeRange.point7Am
-                            && vehicle.EntryDate.TimeOfDay < TimeRange.point12Pm)
-                        {
-                            amHours += TimeRange.point12Pm - vehicle.EntryDate.TimeOfDay;
-                            pmHours += TimeRange.point7Pm - TimeRange.point12Pm;
-                        }
-                        else if (vehicle.EntryDate.TimeOfDay > TimeRange.point12Pm
-                            && vehicle.EntryDate.TimeOfDay < TimeRange.point7Pm)
-                        {
-                            pmHours += TimeRange.point7Pm - vehicle.EntryDate.TimeOfDay;
-                        }
+                        amHours += TimeRange.Point12Pm - startChargeTime;
+                        pmHours += endChargeTime - TimeRange.Point12Pm;
                     }
-                    else if (vehicle.ExitDate.Date == date)
+                    else if (startChargeTime > TimeRange.Point12Pm && endChargeTime > TimeRange.Point12Pm)
                     {
-                        if (vehicle.ExitDate.TimeOfDay > TimeRange.point7Am
-                            && vehicle.ExitDate.TimeOfDay < TimeRange.point12Pm)
-                        {
-                            amHours += vehicle.ExitDate.TimeOfDay - TimeRange.point7Am;
-                        }
-                        else if (vehicle.ExitDate.TimeOfDay > TimeRange.point12Pm
-                            && vehicle.ExitDate.TimeOfDay < TimeRange.point7Pm)
-                        {
-                            amHours += TimeRange.point12Pm - TimeRange.point7Am;
-                            pmHours += vehicle.ExitDate.TimeOfDay - TimeRange.point12Pm;
-                        }
-                        else if (vehicle.ExitDate.TimeOfDay > TimeRange.point7Pm)
-                        {
-                            amHours += TimeRange.point12Pm - TimeRange.point7Am;
-                            pmHours += TimeRange.point7Pm - TimeRange.point12Pm;
-                        }
-                    }
-                    else
-                    {
-                        amHours += TimeRange.point12Pm - TimeRange.point7Am;
-                        pmHours += TimeRange.point7Pm - TimeRange.point12Pm;
+                        pmHours += endChargeTime - startChargeTime;
                     }
                 }
             }
