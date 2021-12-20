@@ -12,10 +12,24 @@ namespace CongestionChargeApp
     {
         static void Main(string[] args)
         {
-            var jsonVehicles = File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Data\vehicles.json"));
+            var jsonVehicles = File.ReadAllText(@"Data\vehicles.json");
             var vehicles = JsonConvert.DeserializeObject<List<Vehicle>>(jsonVehicles);
 
             PrintReceipts(vehicles);
+
+            List<Vehicle> _data = new List<Vehicle>();
+
+            _data.Add(new Vehicle()
+            {
+                Name = "Test car",
+                EntryDate = DateTime.Now,
+                ExitDate = DateTime.Now.AddDays(1),
+                Type = VehicleType.Motorbike
+            });
+
+            string json = JsonConvert.SerializeObject(_data);
+
+            //File.WriteAllText(@"..\..\..\Data\vehicles1.json", json);
         }
 
         static void PrintReceipts(List<Vehicle> vehicles)
